@@ -201,7 +201,7 @@ function getDepends() {
     iniGet "own_sdl2"
     [[ "$ini_value" == "0" ]] && own_sdl2=0
 
-    for required in $@; do
+    for required in "$@"; do
 
         # workaround for different package names on osmc / xbian
         if [[ "$required" == "libraspberrypi-dev" ]]; then
@@ -244,11 +244,11 @@ function getDepends() {
             apt-get autoremove --purge -y
             return 0
         fi
-        echo "Did not find needed package(s): ${packages[@]}. I am trying to install them now."
+        echo "Did not find needed package(s): ${packages[*]}. I am trying to install them now."
 
         # workaround to force installation of our fixed libsdl1.2 and custom compiled libsdl2
         local temp=()
-        for required in ${packages[@]}; do
+        for required in "${packages[@]}"; do
             if isPlatform "rpi" && [[ "$required" == "libsdl1.2-dev" ]]; then
                 if [[ "$__has_binaries" -eq 1 ]]; then
                     rp_callModule sdl1 install_bin
@@ -271,7 +271,7 @@ function getDepends() {
 
         # check the required packages again rather than return code of apt-get,
         # as apt-get might fail for other reasons (eg other half installed packages)
-        for required in ${packages[@]}; do
+        for required in "${packages[@]}"; do
             if ! hasPackage "$required"; then
                 # workaround for installing samba in a chroot (fails due to failed smbd service restart)
                 # we replace the init.d script with an empty script so the install completes
@@ -1062,7 +1062,7 @@ function getPlatformConfig() {
 ## @details Adds a system to one of the frontend launchers
 function addSystem() {
     # backward compatibility for old addSystem functionality
-    if [[ $# > 3 ]]; then
+    if [[ $# -gt 3 ]]; then
         addEmulator "$@"
         addSystem "$3"
         return
